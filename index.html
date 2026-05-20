@@ -12,29 +12,6 @@
     <meta name="apple-mobile-web-app-title" content="Eco-Dash">
     <link rel="apple-touch-icon" href="icona.png">
 
-    <!-- Web App Manifest codificato in linea (Data URI) per mantenere il file unico -->
-    <link rel="manifest" href='data:application/manifest+json,{
-        "name": "Eco-Dash: Cyber Clean-up",
-        "short_name": "EcoDash",
-        "start_url": ".",
-        "display": "standalone",
-        "background_color": "#0b0f19",
-        "theme_color": "#0b0f19",
-        "orientation": "portrait",
-        "icons": [
-            {
-                "src": "icona.png",
-                "sizes": "192x192",
-                "type": "image/png"
-            },
-            {
-                "src": "icona.png",
-                "sizes": "512x512",
-                "type": "image/png"
-            }
-        ]
-    }'>
-
     <!-- Tailwind CSS per il layout e stile moderno -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font di Google dal look gaming/tech -->
@@ -86,7 +63,7 @@
         <div class="my-auto space-y-4 max-w-md mx-auto w-full">
             <!-- Logo animato -->
             <div class="relative inline-block mt-2">
-                <span class="text-[10px] uppercase tracking-widest bg-cyan-500/20 text-cyan-400 px-3 py-1 rounded-full border border-cyan-500/30">Cyber Arcade v2.5 PWA</span>
+                <span class="text-[10px] uppercase tracking-widest bg-cyan-500/20 text-cyan-400 px-3 py-1 rounded-full border border-cyan-500/30">Cyber Arcade v2.6 PWA</span>
                 <h1 class="text-4xl md:text-5xl font-extrabold font-gaming mt-2 tracking-tight leading-none">
                     <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-teal-300 neon-text-cyan">ECO</span><br>
                     <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-400 neon-text-magenta">DASH</span>
@@ -129,8 +106,8 @@
                     Avvia Sistema ⚡
                 </button>
                 
-                <!-- Bottone d'installazione PWA (Inizialmente nascosto, visibile se supportato) -->
-                <button id="install-btn" class="hidden w-full py-2.5 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 text-white font-bold text-xs rounded-lg shadow-lg shadow-pink-950/20 transition transform active:scale-95 font-gaming uppercase tracking-wider items-center justify-center gap-1.5">
+                <!-- Bottone d'installazione PWA (Sempre interattivo grazie al nostro nuovo gestore) -->
+                <button id="install-btn" class="w-full py-2.5 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 text-white font-bold text-xs rounded-lg shadow-lg shadow-pink-950/20 transition transform active:scale-95 font-gaming uppercase tracking-wider flex items-center justify-center gap-1.5">
                     Installa Gioco 📱
                 </button>
 
@@ -142,6 +119,31 @@
 
         <div class="text-[10px] text-slate-500 font-medium mt-3 shrink-0">
             PWA Pronta • Gioca offline e installa sulla Home
+        </div>
+    </div>
+
+    <!-- Popup Interattivo per l'Installazione Guidata (iOS/Android Fallback) -->
+    <div id="install-guide-modal" class="absolute inset-0 z-50 bg-black/90 hidden flex-col justify-center p-6 text-center">
+        <div class="max-w-md mx-auto bg-slate-900 border border-slate-800 p-6 rounded-3xl space-y-4 shadow-2xl">
+            <div class="w-16 h-16 bg-pink-500/10 text-pink-500 border border-pink-500/30 rounded-full flex items-center justify-center text-3xl mx-auto animate-pulse">
+                📱
+            </div>
+            <h3 class="text-xl font-bold font-gaming text-pink-400">Installa sulla Home Screen</h3>
+            <p class="text-xs text-slate-300">Porta <strong class="text-white">Eco-Dash</strong> direttamente sul tuo smartphone per giocarci a schermo intero senza barra di navigazione!</p>
+            
+            <!-- Contenuto dinamico in base al sistema rilevato -->
+            <div id="guide-steps" class="bg-slate-950 p-4 rounded-xl text-left text-xs space-y-3 border border-slate-800/60">
+                <!-- Verrà riempito via JS -->
+            </div>
+
+            <div class="flex gap-2">
+                <button id="try-native-btn" class="hidden flex-1 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs rounded-xl font-gaming transition">
+                    Installa Ora ⚡
+                </button>
+                <button id="close-guide-btn" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-xl transition">
+                    Chiudi ✕
+                </button>
+            </div>
         </div>
     </div>
 
@@ -281,6 +283,10 @@
         const startScreen = document.getElementById('start-screen');
         const gameOverScreen = document.getElementById('game-over-screen');
         const howToScreen = document.getElementById('how-to-screen');
+        const installGuideModal = document.getElementById('install-guide-modal');
+        const guideSteps = document.getElementById('guide-steps');
+        const tryNativeBtn = document.getElementById('try-native-btn');
+        const closeGuideBtn = document.getElementById('close-guide-btn');
         const scoreVal = document.getElementById('score-val');
         const zoneBadge = document.getElementById('zone-badge');
         const energyBar = document.getElementById('energy-bar');
@@ -304,68 +310,143 @@
         const btnLane1 = document.getElementById('btn-lane-1');
         const btnLane2 = document.getElementById('btn-lane-2');
 
-        // REGISTRAZIONE SERVICE WORKER PWA IN LINEA (BLOB)
+        // 1. GENERAZIONE DINAMICA E COMPILAZIONE DEL WEB APP MANIFEST CON FALLBACK SVG AD ALTA DEFINIZIONE
+        // Questa tecnica garantisce l'installabilità e previene rifiuti dovuti a icone 404 mancanti.
+        try {
+            const svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512"><rect width="512" height="512" rx="120" fill="%230b0f19"/><circle cx="256" cy="256" r="200" fill="none" stroke="%2306b6d4" stroke-width="16" stroke-dasharray="15 10"/><circle cx="256" cy="256" r="170" fill="none" stroke="%23ec4899" stroke-width="8" opacity="0.8"/><rect x="156" y="176" width="200" height="130" rx="30" fill="%231e293b" stroke="%2306b6d4" stroke-width="12"/><rect x="186" y="206" width="140" height="50" rx="15" fill="%230f172a" stroke="%23ec4899" stroke-width="6"/><text x="256" y="240" font-family="monospace" font-weight="bold" font-size="32" fill="%2334d399" text-anchor="middle" dominant-baseline="middle">O_O</text><line x1="256" y1="176" x2="256" y2="126" stroke="%23475569" stroke-width="10"/><circle cx="256" cy="116" r="16" fill="%23e11d48"/></svg>`;
+            const svgDataUri = 'data:image/svg+xml;utf8,' + encodeURIComponent(svgIcon);
+
+            const manifestObj = {
+                "name": "Eco-Dash: Cyber Clean-up",
+                "short_name": "EcoDash",
+                "start_url": window.location.href, // Indirizzo dinamico preciso della pagina attiva
+                "display": "standalone",
+                "background_color": "#0b0f19",
+                "theme_color": "#0b0f19",
+                "orientation": "portrait",
+                "icons": [
+                    {
+                        "src": "icona.png",
+                        "sizes": "192x192",
+                        "type": "image/png"
+                    },
+                    {
+                        "src": svgDataUri,
+                        "sizes": "512x512",
+                        "type": "image/svg+xml",
+                        "purpose": "any"
+                    }
+                ]
+            };
+
+            const manifestBlob = new Blob([JSON.stringify(manifestObj)], { type: 'application/json' });
+            const manifestURL = URL.createObjectURL(manifestBlob);
+            
+            const manifestLink = document.createElement('link');
+            manifestLink.rel = 'manifest';
+            manifestLink.href = manifestURL;
+            document.head.appendChild(manifestLink);
+        } catch (e) {
+            console.warn("Impossibile generare il Manifest PWA dinamico:", e);
+        }
+
+        // 2. REGISTRAZIONE DEL SERVICE WORKER LOCALE (REQUISITO DI SICUREZZA ORIGIN PER L'INSTALLAZIONE NATIVA)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                try {
-                    const swCode = `
-                        const CACHE_NAME = 'ecodash-pwa-v1';
-                        const ASSETS = [
-                            '/',
-                            'index.html',
-                            'icona.png'
-                        ];
-                        self.addEventListener('install', (e) => {
-                            e.waitUntil(
-                                caches.open(CACHE_NAME).then((cache) => {
-                                    return cache.addAll(ASSETS).catch(() => {});
-                                })
-                            );
-                        });
-                        self.addEventListener('fetch', (e) => {
-                            e.respondWith(
-                                caches.match(e.request).then((res) => {
-                                    return res || fetch(e.request);
-                                })
-                            );
-                        });
-                    `;
-                    const blob = new Blob([swCode], { type: 'application/javascript' });
-                    const swUrl = URL.createObjectURL(blob);
-                    navigator.serviceWorker.register(swUrl).catch((err) => {
-                        console.log('SW registration bypassed (normal in sandboxed frames):', err);
-                    });
-                } catch (e) {
-                    console.warn('Errore creazione SW Blob:', e);
-                }
+                // Se hai posizionato sw.js sul tuo server locale, verrà agganciato qui.
+                navigator.serviceWorker.register('./sw.js').then((reg) => {
+                    console.log('Service Worker registrato correttamente con successo!', reg.scope);
+                }).catch((err) => {
+                    // Catcher per sandbox / iframe del Canvas (comportamento standard sicuro)
+                    console.log('Registrazione SW ignorata o in attesa di file sw.js fisico sul server:', err);
+                });
             });
         }
 
-        // SUPPORTO ALL'INSTALLAZIONE PWA NATIVA
+        // 3. SUPPORTO ALL'INSTALLAZIONE DINAMICA E POPUP GUIDA INTERATTIVA
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
-            // Impedisce al browser di mostrare subito il banner
+            // Blocca il banner nativo noioso del browser
             e.preventDefault();
-            // Salva l'evento per attivarlo in seguito
             deferredPrompt = e;
-            // Rende visibile il pulsante "Installa Gioco"
-            if (installBtn) {
-                installBtn.style.display = 'flex';
+            // Rileva supporto nativo e mostra il tasto principale
+            if (tryNativeBtn) {
+                tryNativeBtn.classList.remove('hidden');
             }
         });
 
-        if (installBtn) {
-            installBtn.addEventListener('click', async () => {
+        // Gestore per guidare l'utente all'installazione su qualsiasi dispositivo
+        installBtn.addEventListener('click', () => {
+            initAudio(); // Abilita l'audio sulla prima interazione del menu
+            showInstallInstructions();
+        });
+
+        function showInstallInstructions() {
+            // Rilevamento del sistema operativo e browser per una guida accurata al 100%
+            const userAgent = navigator.userAgent.toLowerCase();
+            const isiOS = /ipad|iphone|ipod/.test(userAgent) && !window.MSStream;
+            const isSafari = /safari/.test(userAgent) && !/chrome/.test(userAgent);
+            
+            let htmlGuide = "";
+
+            if (isiOS) {
+                // Guida specifica per Apple Safari / iOS
+                htmlGuide = `
+                    <div class="space-y-2.5">
+                        <p class="font-semibold text-white">Dispositivo Apple iOS rilevato:</p>
+                        <ol class="list-decimal list-inside space-y-1.5 text-slate-300">
+                            <li>Premi il pulsante di <strong class="text-pink-400">Condivisione</strong> in Safari <span class="text-lg">⎋</span> (in basso su iPhone, in alto su iPad).</li>
+                            <li>Scorri il menu e tocca l'opzione <strong class="text-cyan-400">"Aggiungi alla schermata Home"</strong> <span>⊕</span>.</li>
+                            <li>Tocca <strong class="text-emerald-400">"Aggiungi"</strong> in alto a destra per completare!</li>
+                        </ol>
+                    </div>
+                `;
+                if (tryNativeBtn) tryNativeBtn.classList.add('hidden');
+            } else if (deferredPrompt) {
+                // Supporto nativo Android/Chrome pronto
+                htmlGuide = `
+                    <div class="space-y-2">
+                        <p class="font-semibold text-emerald-400">Pronto per l'installazione immediata!</p>
+                        <p class="text-slate-300">Clicca sul pulsante qui sotto per aggiungere il gioco direttamente alla tua libreria applicazioni.</p>
+                    </div>
+                `;
+                if (tryNativeBtn) tryNativeBtn.classList.remove('hidden');
+            } else {
+                // Altri browser/Desktop o all'interno di Sandbox iFrame
+                htmlGuide = `
+                    <div class="space-y-2.5">
+                        <p class="font-semibold text-white">Come installare sul tuo dispositivo:</p>
+                        <ol class="list-decimal list-inside space-y-1.5 text-slate-300">
+                            <li>Tocca l'icona con i <strong class="text-pink-400">tre puntini ⋮</strong> in alto a destra nel tuo browser.</li>
+                            <li>Seleziona <strong class="text-cyan-400">"Aggiungi a schermata Home"</strong> o <strong class="text-cyan-400">"Installa applicazione"</strong>.</li>
+                            <li>Conferma per sbloccare la modalità immersiva a schermo intero!</li>
+                        </ol>
+                    </div>
+                `;
+                if (tryNativeBtn) tryNativeBtn.classList.add('hidden');
+            }
+
+            guideSteps.innerHTML = htmlGuide;
+            installGuideModal.classList.remove('hidden');
+            installGuideModal.classList.add('flex');
+        }
+
+        if (tryNativeBtn) {
+            tryNativeBtn.addEventListener('click', async () => {
                 if (!deferredPrompt) return;
-                // Mostra il prompt d'installazione
                 deferredPrompt.prompt();
                 const { outcome } = await deferredPrompt.userChoice;
-                console.log(`User Choice: ${outcome}`);
+                console.log(`Risultato installazione nativa: ${outcome}`);
                 deferredPrompt = null;
-                // Nasconde il pulsante dopo la scelta
-                installBtn.style.display = 'none';
+                installGuideModal.classList.add('hidden');
+                installGuideModal.classList.remove('flex');
             });
         }
+
+        closeGuideBtn.addEventListener('click', () => {
+            installGuideModal.classList.add('hidden');
+            installGuideModal.classList.remove('flex');
+        });
 
         // Audio sintetizzato
         let audioCtx = null;
@@ -711,6 +792,7 @@
             showPointsToast(`ZONA SUPERATA! 🚀`, theme.textColor);
         }
 
+        // Funzioni per flash sullo schermo
         function triggerDamageFlash() {
             damageFlash.style.opacity = '1';
             setTimeout(() => {
