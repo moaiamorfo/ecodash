@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="it" class="h-full w-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <title>Eco-Dash: Cyber Clean-up</title>
+    
+    <!-- Meta tag per PWA e Mobile Optimization -->
+    <meta name="theme-color" content="#0b0f19">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Eco-Dash">
+    <link rel="apple-touch-icon" href="icona.png">
+
+    <!-- Web App Manifest codificato in linea (Data URI) per mantenere il file unico -->
+    <link rel="manifest" href='data:application/manifest+json,{
+        "name": "Eco-Dash: Cyber Clean-up",
+        "short_name": "EcoDash",
+        "start_url": ".",
+        "display": "standalone",
+        "background_color": "#0b0f19",
+        "theme_color": "#0b0f19",
+        "orientation": "portrait",
+        "icons": [
+            {
+                "src": "icona.png",
+                "sizes": "192x192",
+                "type": "image/png"
+            },
+            {
+                "src": "icona.png",
+                "sizes": "512x512",
+                "type": "image/png"
+            }
+        ]
+    }'>
+
+    <!-- Tailwind CSS per il layout e stile moderno -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font di Google dal look gaming/tech -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #0b0f19;
+        }
+        body {
+            font-family: 'Outfit', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+        }
+        .font-gaming {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        /* Effetti neon vibranti */
+        .neon-border-pink {
+            box-shadow: 0 0 12px #ec4899;
+        }
+        .neon-border-cyan {
+            box-shadow: 0 0 12px #06b6d4;
+        }
+        .neon-text-cyan {
+            text-shadow: 0 0 8px rgba(6, 182, 212, 0.8);
+        }
+        .neon-text-magenta {
+            text-shadow: 0 0 8px rgba(236, 72, 153, 0.8);
+        }
+        /* Nascondi barra di scorrimento */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-between text-white p-3 pb-4 h-full w-full">
+
+    <!-- Schermata di Avvio / Menu principale -->
+    <div id="start-screen" class="absolute inset-0 z-30 bg-[#0b0f19] flex flex-col justify-between p-5 text-center overflow-y-auto">
+        <div class="my-auto space-y-4 max-w-md mx-auto w-full">
+            <!-- Logo animato -->
+            <div class="relative inline-block mt-2">
+                <span class="text-[10px] uppercase tracking-widest bg-cyan-500/20 text-cyan-400 px-3 py-1 rounded-full border border-cyan-500/30">Cyber Arcade v2.5 PWA</span>
+                <h1 class="text-4xl md:text-5xl font-extrabold font-gaming mt-2 tracking-tight leading-none">
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-teal-300 neon-text-cyan">ECO</span><br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-400 neon-text-magenta">DASH</span>
+                </h1>
+                <p class="text-pink-400 font-bold tracking-wider text-xs mt-1">CYBER CLEAN-UP</p>
+            </div>
+
+            <!-- Titolo Selezione Robot -->
+            <div class="pt-2">
+                <p class="text-xs uppercase tracking-wider text-slate-400 font-bold font-gaming mb-2">⚡ Scegli il tuo Cyber-Bot ⚡</p>
+                
+                <!-- Griglia per la scelta del Robot -->
+                <div class="grid grid-cols-3 gap-2 px-1">
+                    <!-- Robot 1: Cruiser -->
+                    <div id="select-bot-cruiser" onclick="selectRobot('cruiser')" class="cursor-pointer bg-slate-900/80 border-2 border-cyan-500 rounded-xl p-2.5 transition transform hover:scale-105 flex flex-col items-center">
+                        <span class="text-2xl mb-1">🤖</span>
+                        <h4 class="text-xs font-bold text-cyan-400">CRUISER</h4>
+                        <p class="text-[9px] text-slate-400 mt-1 leading-tight">Bilanciato<br>Standard</p>
+                    </div>
+
+                    <!-- Robot 2: Viper -->
+                    <div id="select-bot-viper" onclick="selectRobot('viper')" class="cursor-pointer bg-slate-900/40 border border-slate-800 rounded-xl p-2.5 transition transform hover:scale-105 flex flex-col items-center">
+                        <span class="text-2xl mb-1">🛸</span>
+                        <h4 class="text-xs font-bold text-pink-500">VIPER</h4>
+                        <p class="text-[9px] text-slate-400 mt-1 leading-tight">Super Agile<br>Danni +15%</p>
+                    </div>
+
+                    <!-- Robot 3: Titan -->
+                    <div id="select-bot-titan" onclick="selectRobot('titan')" class="cursor-pointer bg-slate-900/40 border border-slate-800 rounded-xl p-2.5 transition transform hover:scale-105 flex flex-col items-center">
+                        <span class="text-2xl mb-1">🛡️</span>
+                        <h4 class="text-xs font-bold text-amber-500">TITAN</h4>
+                        <p class="text-[9px] text-slate-400 mt-1 leading-tight">Anti-Malware<br>No Rallenty</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pulsanti di avvio e installazione -->
+            <div class="space-y-2 max-w-xs mx-auto pt-2">
+                <button id="start-btn" class="w-full py-3.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-base rounded-xl shadow-[0_0_20px_rgba(6,182,212,0.4)] transition transform active:scale-95 font-gaming uppercase tracking-wider">
+                    Avvia Sistema ⚡
+                </button>
+                
+                <!-- Bottone d'installazione PWA (Inizialmente nascosto, visibile se supportato) -->
+                <button id="install-btn" class="hidden w-full py-2.5 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 text-white font-bold text-xs rounded-lg shadow-lg shadow-pink-950/20 transition transform active:scale-95 font-gaming uppercase tracking-wider items-center justify-center gap-1.5">
+                    Installa Gioco 📱
+                </button>
+
+                <button id="how-to-btn" class="w-full py-2 bg-slate-900 border border-slate-800 text-slate-400 font-semibold text-xs rounded-lg hover:bg-slate-800 transition">
+                    Manuale d'Istruzione ❓
+                </button>
+            </div>
+        </div>
+
+        <div class="text-[10px] text-slate-500 font-medium mt-3 shrink-0">
+            PWA Pronta • Gioca offline e installa sulla Home
+        </div>
+    </div>
+
+    <!-- Schermata Istruzioni -->
+    <div id="how-to-screen" class="absolute inset-0 z-40 bg-[#0b0f19]/98 hidden flex-col justify-center p-6 text-center">
+        <div class="max-w-md mx-auto space-y-5 bg-slate-900/90 border border-slate-800 p-6 rounded-3xl">
+            <h2 class="text-2xl font-bold font-gaming text-cyan-400">Come si gioca? 🔋</h2>
+            
+            <div class="space-y-3.5 text-left text-xs text-slate-300 leading-relaxed">
+                <div class="flex items-start gap-3">
+                    <span class="text-xl">📱</span>
+                    <p><strong class="text-white">Movimento Rapido:</strong> Tocca lo schermo a destra/sinistra o usa i pulsanti in basso per scattare sulle 3 corsie.</p>
+                </div>
+                <div class="flex items-start gap-3">
+                    <span class="text-xl">🔋</span>
+                    <p><strong class="text-white">Energia in Esaurimento:</strong> L'energia si scarica da sola ogni secondo! Raccogli cyber-rifiuti (🔋 💾 📱) per rimanere online.</p>
+                </div>
+                <div class="flex items-start gap-3">
+                    <span class="text-xl">👾</span>
+                    <p><strong class="text-white">Glitch & Virus:</strong> Colpendo gli ostacoli rossi verrai rallentato temporaneamente (tranne se guidi il pesante Bio-Titan)!</p>
+                </div>
+                <div class="flex items-start gap-3">
+                    <span class="text-xl">🌌</span>
+                    <p><strong class="text-white">Sblocca nuove Zone:</strong> Supera i record di punti (250, 600...) per aggiornare il firewall dello sfondo e cambiare grafica!</p>
+                </div>
+            </div>
+
+            <button id="close-how-to-btn" class="w-full py-3 bg-pink-600 hover:bg-pink-500 text-white font-bold rounded-xl font-gaming transition">
+                Configurazione Completa 🔥
+            </button>
+        </div>
+    </div>
+
+    <!-- Schermata Game Over -->
+    <div id="game-over-screen" class="absolute inset-0 z-30 bg-[#0b0f19]/95 hidden flex-col justify-center p-6 text-center">
+        <div class="my-auto space-y-5 max-w-sm mx-auto w-full">
+            <h2 class="text-4xl font-extrabold font-gaming text-pink-500 tracking-tight neon-text-magenta">SISTEMA SPEGNIMENTO</h2>
+            <p class="text-slate-400 text-xs">Batteria scarica o impatto fatale del virus!</p>
+
+            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 space-y-3">
+                <div>
+                    <span class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Cyber Punti</span>
+                    <p id="final-score" class="text-5xl font-extrabold font-gaming text-cyan-400 neon-text-cyan">0</p>
+                </div>
+                <div class="flex justify-around border-t border-slate-800/60 pt-3">
+                    <div>
+                        <span class="text-[10px] text-slate-500">Record Personale</span>
+                        <p id="best-score" class="text-base font-bold font-gaming text-yellow-400">0</p>
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-slate-500">Materiale Riciclato</span>
+                        <p id="total-collected" class="text-base font-bold font-gaming text-green-400">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-2.5">
+                <button id="restart-btn" class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-white font-bold text-base rounded-xl shadow-[0_0_20px_rgba(16,185,129,0.3)] transition transform active:scale-95 font-gaming uppercase tracking-wider">
+                    Riavvia Robot 🔁
+                </button>
+                <button id="back-to-menu-btn" class="w-full py-2.5 bg-slate-900 border border-slate-800 text-slate-400 font-semibold text-xs rounded-xl hover:bg-slate-800 transition">
+                    Cambia Configurazione 🏠
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Visivi / Toast dei punti in-game -->
+    <div id="toast-container" class="absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-20 flex flex-col gap-1 items-center"></div>
+
+    <!-- UI di Gioco Superiore -->
+    <div class="w-full max-w-md flex justify-between items-center z-10 shrink-0">
+        <!-- Punteggio e Zona -->
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl px-3 py-1.5 flex items-center gap-2">
+            <span class="text-yellow-400 font-bold text-sm">⚡</span>
+            <div>
+                <span id="zone-badge" class="text-[9px] text-cyan-400 font-bold block uppercase tracking-wider leading-none">ZONA 1</span>
+                <span id="score-val" class="text-lg font-extrabold font-gaming text-white">0</span>
+            </div>
+        </div>
+
+        <!-- Energia / Vita -->
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl px-3 py-1.5 flex items-center gap-3 w-1/2 max-w-[180px]">
+            <div class="w-full">
+                <div class="flex justify-between items-center mb-0.5">
+                    <span class="text-[9px] text-slate-400 uppercase tracking-wider leading-none">Status</span>
+                    <span id="energy-text" class="text-[9px] text-cyan-400 font-bold">100%</span>
+                </div>
+                <div class="w-full h-2 bg-slate-950 rounded-full overflow-hidden border border-slate-800/60">
+                    <div id="energy-bar" class="h-full bg-gradient-to-r from-cyan-400 to-emerald-400 transition-all duration-100" style="width: 100%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Area Canvas Principale (Gioco) -->
+    <div id="canvas-container" class="relative w-full max-w-md flex-grow my-2 rounded-2xl overflow-hidden border border-slate-800 bg-[#0e1424] shadow-2xl shadow-cyan-950/20 min-h-[280px]">
+        <!-- Canvas -->
+        <canvas id="game-canvas" class="w-full h-full block"></canvas>
+        
+        <!-- Overlay Feedback Visivo Hit -->
+        <div id="damage-flash" class="absolute inset-0 bg-red-600/40 opacity-0 pointer-events-none transition-opacity duration-100"></div>
+        <div id="shield-flash" class="absolute inset-0 bg-cyan-400/30 opacity-0 pointer-events-none transition-opacity duration-100"></div>
+        
+        <!-- Overlay Feedback Visivo Rallentamento / Glitch -->
+        <div id="slow-overlay" class="absolute inset-0 border-4 border-amber-500/0 opacity-0 pointer-events-none transition-all duration-100"></div>
+    </div>
+
+    <!-- UI di Controllo Inferiore (Ottimizzato per Pollice) -->
+    <div class="w-full max-w-md z-10 space-y-1.5 shrink-0">
+        <!-- Indicatori Corsie Touch -->
+        <div class="grid grid-cols-3 gap-1.5">
+            <button id="btn-lane-0" class="py-2.5 bg-slate-900/50 hover:bg-slate-900 border border-slate-800/60 active:bg-cyan-950/40 text-slate-500 active:text-cyan-400 rounded-xl transition flex flex-col items-center justify-center">
+                <span class="text-[10px]">Sinistra</span>
+                <span class="text-base font-bold">◀</span>
+            </button>
+            <button id="btn-lane-1" class="py-2.5 bg-slate-900/50 hover:bg-slate-900 border border-slate-800/60 active:bg-cyan-950/40 text-slate-500 active:text-cyan-400 rounded-xl transition flex flex-col items-center justify-center">
+                <span class="text-[10px]">Centro</span>
+                <span class="text-base font-bold">▲</span>
+            </button>
+            <button id="btn-lane-2" class="py-2.5 bg-slate-900/50 hover:bg-slate-900 border border-slate-800/60 active:bg-cyan-950/40 text-slate-500 active:text-cyan-400 rounded-xl transition flex flex-col items-center justify-center">
+                <span class="text-[10px]">Destra</span>
+                <span class="text-base font-bold">▶</span>
+            </button>
+        </div>
+        <p class="text-[9px] text-center text-slate-500">Tocca le corsie o fai swipe sullo schermo per muoverti</p>
+    </div>
+
+    <!-- Codice Logica del Gioco e PWA -->
+    <script>
+        // Setup base del Canvas e del Gioco
+        const canvas = document.getElementById('game-canvas');
+        const container = document.getElementById('canvas-container');
+        const ctx = canvas.getContext('2d');
+
+        // Schermate e UI
+        const startScreen = document.getElementById('start-screen');
+        const gameOverScreen = document.getElementById('game-over-screen');
+        const howToScreen = document.getElementById('how-to-screen');
+        const scoreVal = document.getElementById('score-val');
+        const zoneBadge = document.getElementById('zone-badge');
+        const energyBar = document.getElementById('energy-bar');
+        const energyText = document.getElementById('energy-text');
+        const finalScoreText = document.getElementById('final-score');
+        const bestScoreText = document.getElementById('best-score');
+        const totalCollectedText = document.getElementById('total-collected');
+        const damageFlash = document.getElementById('damage-flash');
+        const shieldFlash = document.getElementById('shield-flash');
+        const slowOverlay = document.getElementById('slow-overlay');
+        const toastContainer = document.getElementById('toast-container');
+
+        // Bottoni
+        const startBtn = document.getElementById('start-btn');
+        const installBtn = document.getElementById('install-btn');
+        const howToBtn = document.getElementById('how-to-btn');
+        const closeHowToBtn = document.getElementById('close-how-to-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const backToMenuBtn = document.getElementById('back-to-menu-btn');
+        const btnLane0 = document.getElementById('btn-lane-0');
+        const btnLane1 = document.getElementById('btn-lane-1');
+        const btnLane2 = document.getElementById('btn-lane-2');
+
+        // REGISTRAZIONE SERVICE WORKER PWA IN LINEA (BLOB)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                try {
+                    const swCode = `
+                        const CACHE_NAME = 'ecodash-pwa-v1';
+                        const ASSETS = [
+                            '/',
+                            'index.html',
+                            'icona.png'
+                        ];
+                        self.addEventListener('install', (e) => {
+                            e.waitUntil(
+                                caches.open(CACHE_NAME).then((cache) => {
+                                    return cache.addAll(ASSETS).catch(() => {});
+                                })
+                            );
+                        });
+                        self.addEventListener('fetch', (e) => {
+                            e.respondWith(
+                                caches.match(e.request).then((res) => {
+                                    return res || fetch(e.request);
+                                })
+                            );
+                        });
+                    `;
+                    const blob = new Blob([swCode], { type: 'application/javascript' });
+                    const swUrl = URL.createObjectURL(blob);
+                    navigator.serviceWorker.register(swUrl).catch((err) => {
+                        console.log('SW registration bypassed (normal in sandboxed frames):', err);
+                    });
+                } catch (e) {
+                    console.warn('Errore creazione SW Blob:', e);
+                }
+            });
+        }
+
+        // SUPPORTO ALL'INSTALLAZIONE PWA NATIVA
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Impedisce al browser di mostrare subito il banner
+            e.preventDefault();
+            // Salva l'evento per attivarlo in seguito
+            deferredPrompt = e;
+            // Rende visibile il pulsante "Installa Gioco"
+            if (installBtn) {
+                installBtn.style.display = 'flex';
+            }
+        });
+
+        if (installBtn) {
+            installBtn.addEventListener('click', async () => {
+                if (!deferredPrompt) return;
+                // Mostra il prompt d'installazione
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User Choice: ${outcome}`);
+                deferredPrompt = null;
+                // Nasconde il pulsante dopo la scelta
+                installBtn.style.display = 'none';
+            });
+        }
+
+        // Audio sintetizzato
+        let audioCtx = null;
+        
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playSound(type) {
+            try {
+                initAudio();
+                if (!audioCtx) return;
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'score') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                    osc.frequency.exponentialRampToValueAtTime(783.99, audioCtx.currentTime + 0.12); // G5
+                    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.12);
+                } else if (type === 'hit') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(180, audioCtx.currentTime);
+                    osc.frequency.linearRampToValueAtTime(60, audioCtx.currentTime + 0.3);
+                    gain.gain.setValueAtTime(0.22, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.3);
+                } else if (type === 'powerup') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(350, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(1400, audioCtx.currentTime + 0.35);
+                    gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.35);
+                } else if (type === 'gameover') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(130, audioCtx.currentTime);
+                    osc.frequency.linearRampToValueAtTime(30, audioCtx.currentTime + 0.7);
+                    gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.7);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.7);
+                } else if (type === 'level') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(554, audioCtx.currentTime + 0.1);
+                    osc.frequency.setValueAtTime(659, audioCtx.currentTime + 0.2);
+                    osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.3);
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.55);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.6);
+                }
+            } catch (e) {
+                console.warn("Audio non supportato:", e);
+            }
+        }
+
+        // Tipi di Robot Disponibili
+        const ROBOT_PRESETS = {
+            cruiser: {
+                id: 'cruiser',
+                name: 'Eco-Cruiser',
+                symbol: '🤖',
+                color: '#06b6d4',
+                secondaryColor: '#ec4899',
+                speedMultiplier: 0.25, 
+                damageModifier: 1.0,
+                slowDuration: 2000, 
+                description: 'Bilanciato e affidabile.'
+            },
+            viper: {
+                id: 'viper',
+                name: 'Aero-Viper',
+                symbol: '🛸',
+                color: '#ec4899',
+                secondaryColor: '#a855f7',
+                speedMultiplier: 0.99, 
+                damageModifier: 1.25, 
+                slowDuration: 2500, 
+                description: 'Velocissimo ma fragile.'
+            },
+            titan: {
+                id: 'titan',
+                name: 'Bio-Titan',
+                symbol: '🛡️',
+                color: '#f59e0b',
+                secondaryColor: '#10b981',
+                speedMultiplier: 0.14, 
+                damageModifier: 0.8, 
+                slowDuration: 0, 
+                description: 'Resistente ed immune ai glitch.'
+            }
+        };
+
+        // Stato di gioco globale
+        let gameState = {
+            active: false,
+            score: 0,
+            energy: 100,
+            totalCollected: 0,
+            speedMultiplier: 1.0,
+            laneWidth: 0,
+            lanesX: [],
+            selectedRobot: 'cruiser',
+            currentZone: 1,
+            zoneBannerText: '',
+            zoneBannerTimer: 0,
+            player: {
+                lane: 1, 
+                targetX: 0,
+                x: 0,
+                y: 0,
+                width: 50,
+                height: 50,
+                shieldActive: false,
+                shieldTime: 0,
+                slowTimer: 0 
+            },
+            items: [],
+            particles: [],
+            spawnTimer: 0,
+            spawnInterval: 1200, 
+            lastTime: 0,
+            bestScore: localStorage.getItem('ecodash_best') || 0
+        };
+
+        // Tipologie di oggetti
+        const ITEM_TYPES = {
+            WASTE_BATTERY: { symbol: '🔋', score: 10, energy: 6, color: '#34d399', isWaste: true },
+            WASTE_CHIP: { symbol: '💾', score: 15, energy: 4, color: '#60a5fa', isWaste: true },
+            WASTE_PHONE: { symbol: '📱', score: 25, energy: 10, color: '#a78bfa', isWaste: true },
+            VIRUS: { symbol: '👾', score: -10, energy: -30, color: '#f87171', isWaste: false, isVirus: true },
+            GLITCH: { symbol: '⚠️', score: -5, energy: -20, color: '#fb923c', isWaste: false, isVirus: true },
+            SHIELD: { symbol: '🛡️', score: 5, energy: 10, isShield: true, color: '#22d3ee', isWaste: false }
+        };
+
+        const ZONE_THEMES = {
+            1: {
+                name: 'Neon Dusk',
+                bgColor: '#0e1424',
+                gridColor: 'rgba(6, 182, 212, 0.22)',
+                textColor: 'text-cyan-400'
+            },
+            2: {
+                name: 'Glitch Valley',
+                bgColor: '#250830', 
+                gridColor: 'rgba(236, 72, 153, 0.3)',
+                textColor: 'text-pink-400'
+            },
+            3: {
+                name: 'Core Matrix',
+                bgColor: '#031c15', 
+                gridColor: 'rgba(16, 185, 129, 0.35)',
+                textColor: 'text-emerald-400'
+            }
+        };
+
+        // Seleziona un robot all'inizio
+        function selectRobot(robotId) {
+            gameState.selectedRobot = robotId;
+            ['cruiser', 'viper', 'titan'].forEach(id => {
+                const el = document.getElementById(`select-bot-${id}`);
+                if (id === robotId) {
+                    el.classList.remove('bg-slate-900/40', 'border-slate-800');
+                    el.classList.add('bg-slate-900/80', 'border-2', id === 'cruiser' ? 'border-cyan-500' : id === 'viper' ? 'border-pink-500' : 'border-amber-500');
+                } else {
+                    el.className = "cursor-pointer bg-slate-900/40 border border-slate-800 rounded-xl p-2.5 transition transform hover:scale-105 flex flex-col items-center";
+                }
+            });
+            playSound('score');
+        }
+
+        // Ridimensionamento dinamico del Canvas
+        function resizeCanvas() {
+            const rect = container.getBoundingClientRect();
+            const width = rect.width || 350;
+            const height = rect.height || 450;
+
+            canvas.width = width * window.devicePixelRatio;
+            canvas.height = height * window.devicePixelRatio;
+            
+            canvas.style.width = `${width}px`;
+            canvas.style.height = `${height}px`;
+
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+            gameState.laneWidth = width / 3;
+            gameState.lanesX = [
+                gameState.laneWidth * 0.5, 
+                gameState.laneWidth * 1.5, 
+                gameState.laneWidth * 2.5  
+            ];
+
+            gameState.player.y = height - 70;
+            gameState.player.targetX = gameState.lanesX[gameState.player.lane];
+            if (!gameState.active) {
+                gameState.player.x = gameState.player.targetX;
+            }
+        }
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            draw();
+        });
+        
+        window.addEventListener('orientationchange', () => {
+            setTimeout(() => {
+                resizeCanvas();
+                draw();
+            }, 250);
+        });
+
+        // Controlli di movimento
+        function movePlayer(targetLane) {
+            if (!gameState.active) return;
+            if (targetLane >= 0 && targetLane <= 2) {
+                gameState.player.lane = targetLane;
+                gameState.player.targetX = gameState.lanesX[targetLane];
+            }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft' || e.key === 'a') {
+                movePlayer(gameState.player.lane - 1);
+            } else if (e.key === 'ArrowRight' || e.key === 'd') {
+                movePlayer(gameState.player.lane + 1);
+            }
+        });
+
+        btnLane0.addEventListener('click', () => movePlayer(0));
+        btnLane1.addEventListener('click', () => movePlayer(1));
+        btnLane2.addEventListener('click', () => movePlayer(2));
+
+        let touchStartX = 0;
+        canvas.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+        }, { passive: true });
+
+        canvas.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].clientX;
+            const diffX = touchEndX - touchStartX;
+            if (Math.abs(diffX) > 30) {
+                if (diffX > 0) {
+                    movePlayer(gameState.player.lane + 1);
+                } else {
+                    movePlayer(gameState.player.lane - 1);
+                }
+            } else {
+                const rect = canvas.getBoundingClientRect();
+                const clickX = e.changedTouches[0].clientX - rect.left;
+                const clickedLane = Math.floor(clickX / gameState.laneWidth);
+                movePlayer(clickedLane);
+            }
+        }, { passive: true });
+
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const clickedLane = Math.floor(clickX / gameState.laneWidth);
+            movePlayer(clickedLane);
+        });
+
+        // Generazione oggetti casuali
+        function spawnItem() {
+            const rand = Math.random();
+            let type;
+
+            if (rand < 0.45) {
+                type = Math.random() > 0.5 ? ITEM_TYPES.WASTE_CHIP : ITEM_TYPES.WASTE_BATTERY;
+            } else if (rand < 0.60) {
+                type = ITEM_TYPES.WASTE_PHONE;
+            } else if (rand < 0.88) {
+                type = Math.random() > 0.4 ? ITEM_TYPES.VIRUS : ITEM_TYPES.GLITCH;
+            } else {
+                type = ITEM_TYPES.SHIELD;
+            }
+
+            const lane = Math.floor(Math.random() * 3);
+            const size = 32;
+
+            gameState.items.push({
+                type: type,
+                lane: lane,
+                x: gameState.lanesX[lane],
+                y: -size,
+                size: size,
+                speed: (3.8 + Math.random() * 1.5) * gameState.speedMultiplier,
+                angle: 0,
+                rotSpeed: (Math.random() - 0.5) * 0.05
+            });
+        }
+
+        function spawnParticles(x, y, color) {
+            for (let i = 0; i < 14; i++) {
+                gameState.particles.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 8,
+                    vy: (Math.random() - 0.5) * 8,
+                    size: Math.random() * 4 + 2,
+                    color: color,
+                    alpha: 1.0,
+                    life: 0.94 
+                });
+            }
+        }
+
+        function showPointsToast(text, colorClass) {
+            const toast = document.createElement('div');
+            toast.className = `text-sm font-extrabold font-gaming ${colorClass} animate-bounce transition-all duration-300 transform scale-100`;
+            toast.innerText = text;
+            toastContainer.appendChild(toast);
+            setTimeout(() => {
+                toast.remove();
+            }, 500);
+        }
+
+        function triggerZoneChange(newZone) {
+            gameState.currentZone = newZone;
+            playSound('level');
+            
+            const theme = ZONE_THEMES[newZone];
+            gameState.zoneBannerText = `ZONA ${newZone}: ${theme.name.toUpperCase()}`;
+            gameState.zoneBannerTimer = 3000;
+
+            zoneBadge.innerText = `ZONA ${newZone}`;
+            zoneBadge.className = `text-[9px] font-bold block uppercase tracking-wider leading-none ${theme.textColor}`;
+
+            showPointsToast(`ZONA SUPERATA! 🚀`, theme.textColor);
+        }
+
+        function triggerDamageFlash() {
+            damageFlash.style.opacity = '1';
+            setTimeout(() => {
+                damageFlash.style.opacity = '0';
+            }, 100);
+        }
+
+        function triggerShieldFlash() {
+            shieldFlash.style.opacity = '1';
+            setTimeout(() => {
+                shieldFlash.style.opacity = '0';
+            }, 100);
+        }
+
+        function resetGame() {
+            gameState.score = 0;
+            gameState.energy = 100;
+            gameState.totalCollected = 0;
+            gameState.speedMultiplier = 1.0;
+            gameState.items = [];
+            gameState.particles = [];
+            gameState.player.lane = 1;
+            gameState.player.shieldActive = false;
+            gameState.player.shieldTime = 0;
+            gameState.player.slowTimer = 0;
+            gameState.spawnTimer = 0;
+            gameState.spawnInterval = 1200;
+            gameState.currentZone = 1;
+            gameState.zoneBannerTimer = 0;
+
+            slowOverlay.style.opacity = '0';
+            slowOverlay.className = "absolute inset-0 border-4 border-amber-500/0 opacity-0 pointer-events-none transition-all duration-100";
+
+            zoneBadge.innerText = 'ZONA 1';
+            zoneBadge.className = "text-[9px] text-cyan-400 font-bold block uppercase tracking-wider leading-none";
+
+            scoreVal.innerText = '0';
+            energyBar.style.width = '100%';
+            energyBar.className = "h-full bg-gradient-to-r from-cyan-400 to-emerald-400";
+            energyText.innerText = '100%';
+
+            resizeCanvas();
+        }
+
+        function endGame() {
+            gameState.active = false;
+            playSound('gameover');
+
+            if (gameState.score > gameState.bestScore) {
+                gameState.bestScore = gameState.score;
+                localStorage.setItem('ecodash_best', gameState.score);
+            }
+
+            finalScoreText.innerText = gameState.score;
+            bestScoreText.innerText = gameState.bestScore;
+            totalCollectedText.innerText = gameState.totalCollected;
+
+            gameOverScreen.classList.remove('hidden');
+            gameOverScreen.classList.add('flex');
+        }
+
+        function update(deltaTime) {
+            if (!gameState.active) return;
+
+            const robotStat = ROBOT_PRESETS[gameState.selectedRobot];
+
+            // Consumo graduale e bilanciato dell'energia nel tempo (rende il gioco sfidante!)
+            gameState.energy -= deltaTime * 0.0018;
+            if (gameState.energy <= 0) {
+                gameState.energy = 0;
+                endGame();
+                return;
+            }
+
+            gameState.speedMultiplier = 1.0 + (gameState.score * 0.0008); 
+            gameState.spawnInterval = Math.max(550, 1200 - (gameState.score * 1.8));
+
+            let currentInterpolation = robotStat.speedMultiplier;
+            if (gameState.player.slowTimer > 0) {
+                gameState.player.slowTimer -= deltaTime;
+                if (gameState.player.slowTimer <= 0) {
+                    slowOverlay.style.opacity = '0';
+                    slowOverlay.className = "absolute inset-0 border-4 border-amber-500/0 opacity-0 pointer-events-none";
+                } else {
+                    currentInterpolation = robotStat.speedMultiplier * 0.45;
+                }
+            }
+
+            if (gameState.player.shieldActive) {
+                gameState.player.shieldTime -= deltaTime;
+                if (gameState.player.shieldTime <= 0) {
+                    gameState.player.shieldActive = false;
+                }
+            }
+
+            if (gameState.zoneBannerTimer > 0) {
+                gameState.zoneBannerTimer -= deltaTime;
+            }
+
+            const p = gameState.player;
+            p.x += (p.targetX - p.x) * currentInterpolation;
+
+            gameState.spawnTimer += deltaTime;
+            if (gameState.spawnTimer >= gameState.spawnInterval) {
+                spawnItem();
+                gameState.spawnTimer = 0;
+            }
+
+            const canvasHeight = canvas.height / window.devicePixelRatio;
+            for (let i = gameState.items.length - 1; i >= 0; i--) {
+                const item = gameState.items[i];
+                item.y += item.speed;
+                item.angle += item.rotSpeed;
+
+                if (p.shieldActive && item.type.isWaste) {
+                    const dx = p.x - item.x;
+                    const dy = p.y - item.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 150) {
+                        item.x += (dx / dist) * 6.5;
+                        item.y += (dy / dist) * 6.5;
+                    }
+                }
+
+                const distToPlayerX = Math.abs(item.x - p.x);
+                const distToPlayerY = Math.abs(item.y - p.y);
+
+                if (distToPlayerX < 32 && distToPlayerY < 32) {
+                    if (item.type.isWaste) {
+                        gameState.score += item.type.score;
+                        gameState.totalCollected += 1;
+                        gameState.energy = Math.min(100, gameState.energy + item.type.energy);
+                        
+                        playSound('score');
+                        spawnParticles(item.x, item.y, item.type.color);
+                        showPointsToast(`+${item.type.score}`, 'text-emerald-400');
+
+                        if (gameState.score >= 250 && gameState.currentZone === 1) {
+                            triggerZoneChange(2);
+                        } else if (gameState.score >= 600 && gameState.currentZone === 2) {
+                            triggerZoneChange(3);
+                        }
+
+                    } else if (item.type.isShield) {
+                        p.shieldActive = true;
+                        p.shieldTime = 7000; 
+                        playSound('powerup');
+                        triggerShieldFlash();
+                        spawnParticles(item.x, item.y, item.type.color);
+                        showPointsToast('ATTRACTOR SHIELD! 🛡️', 'text-cyan-400');
+                    } else {
+                        if (p.shieldActive) {
+                            p.shieldActive = false;
+                            playSound('hit');
+                            triggerShieldFlash();
+                            showPointsToast('SCUDO ROTTO! 💥', 'text-yellow-400');
+                        } else {
+                            const rawDamage = item.type.energy; 
+                            const finalDamage = Math.round(rawDamage * robotStat.damageModifier);
+                            
+                            gameState.score = Math.max(0, gameState.score + item.type.score);
+                            gameState.energy = Math.max(0, gameState.energy + finalDamage);
+                            
+                            playSound('hit');
+                            triggerDamageFlash();
+                            spawnParticles(item.x, item.y, '#f43f5e');
+                            showPointsToast(`${finalDamage}`, 'text-rose-500');
+
+                            if (robotStat.slowDuration > 0) {
+                                p.slowTimer = robotStat.slowDuration;
+                                slowOverlay.style.opacity = '1';
+                                slowOverlay.className = "absolute inset-0 border-4 border-amber-500/80 pointer-events-none transition-all duration-100 animate-pulse";
+                                showPointsToast('GLITCH! RALLENTATO', 'text-amber-500');
+                            }
+                        }
+                    }
+
+                    scoreVal.innerText = gameState.score;
+                    energyBar.style.width = `${gameState.energy}%`;
+                    energyText.innerText = `${Math.ceil(gameState.energy)}%`;
+
+                    if (gameState.energy < 30) {
+                        energyBar.className = "h-full bg-gradient-to-r from-red-500 to-pink-500 animate-pulse";
+                    } else if (gameState.energy < 60) {
+                        energyBar.className = "h-full bg-gradient-to-r from-yellow-400 to-amber-500";
+                    } else {
+                        energyBar.className = "h-full bg-gradient-to-r from-cyan-400 to-emerald-400";
+                    }
+
+                    gameState.items.splice(i, 1);
+                    continue;
+                }
+
+                if (item.y > canvasHeight + 40) {
+                    gameState.items.splice(i, 1);
+                }
+            }
+
+            for (let i = gameState.particles.length - 1; i >= 0; i--) {
+                const part = gameState.particles[i];
+                part.x += part.vx;
+                part.y += part.vy;
+                part.alpha *= part.life;
+
+                if (part.alpha < 0.1) {
+                    gameState.particles.splice(i, 1);
+                }
+            }
+        }
+
+        function draw() {
+            const width = canvas.width / window.devicePixelRatio;
+            const height = canvas.height / window.devicePixelRatio;
+            
+            ctx.clearRect(0, 0, width, height);
+            const currentTheme = ZONE_THEMES[gameState.currentZone];
+
+            ctx.fillStyle = currentTheme.bgColor;
+            ctx.fillRect(0, 0, width, height);
+
+            ctx.strokeStyle = currentTheme.gridColor;
+            ctx.lineWidth = 1;
+            
+            ctx.strokeStyle = currentTheme.gridColor;
+            ctx.setLineDash([6, 10]);
+            ctx.beginPath();
+            ctx.moveTo(gameState.laneWidth, 0);
+            ctx.lineTo(gameState.laneWidth, height);
+            ctx.moveTo(gameState.laneWidth * 2, 0);
+            ctx.lineTo(gameState.laneWidth * 2, height);
+            ctx.stroke();
+            ctx.setLineDash([]); 
+
+            gameState.items.forEach(item => {
+                ctx.save();
+                ctx.translate(item.x, item.y);
+                ctx.rotate(item.angle);
+
+                ctx.shadowColor = item.type.color;
+                ctx.shadowBlur = 10;
+
+                ctx.fillStyle = 'rgba(11, 15, 25, 0.9)';
+                ctx.beginPath();
+                ctx.arc(0, 0, 19, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.strokeStyle = item.type.color;
+                ctx.lineWidth = 1.8;
+                ctx.stroke();
+
+                ctx.shadowBlur = 0; 
+                ctx.font = "22px sans-serif";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(item.type.symbol, 0, 0);
+
+                ctx.restore();
+            });
+
+            gameState.particles.forEach(part => {
+                ctx.save();
+                ctx.globalAlpha = part.alpha;
+                ctx.fillStyle = part.color;
+                ctx.beginPath();
+                ctx.arc(part.x, part.y, part.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            });
+
+            const p = gameState.player;
+            const robotStat = ROBOT_PRESETS[gameState.selectedRobot];
+
+            ctx.save();
+            ctx.translate(p.x, p.y);
+
+            if (p.shieldActive) {
+                ctx.strokeStyle = 'rgba(34, 211, 238, 0.8)';
+                ctx.lineWidth = 3;
+                ctx.shadowColor = '#22d3ee';
+                ctx.shadowBlur = 12;
+                ctx.beginPath();
+                ctx.arc(0, 0, 35, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = robotStat.color;
+
+            if (gameState.selectedRobot === 'cruiser') {
+                ctx.fillStyle = '#1e293b';
+                ctx.strokeStyle = robotStat.color;
+                ctx.lineWidth = 2.5;
+                ctx.beginPath();
+                ctx.arc(0, -5, 20, Math.PI, 0, false); 
+                ctx.lineTo(20, 18);
+                ctx.quadraticCurveTo(20, 22, 14, 22);
+                ctx.lineTo(-14, 22);
+                ctx.quadraticCurveTo(-20, 22, -20, 18);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.shadowBlur = 5;
+                ctx.fillStyle = '#0f172a';
+                ctx.beginPath();
+                if (ctx.roundRect) ctx.roundRect(-14, -4, 28, 10, 4);
+                else ctx.rect(-14, -4, 28, 10);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.fillStyle = '#22d3ee';
+                ctx.font = "bold 9px monospace";
+                ctx.textAlign = "center";
+                ctx.fillText("o_o", 0, 4);
+
+            } else if (gameState.selectedRobot === 'viper') {
+                ctx.fillStyle = '#1e1b4b';
+                ctx.strokeStyle = robotStat.color;
+                ctx.lineWidth = 2.5;
+                ctx.beginPath();
+                ctx.moveTo(0, -28);
+                ctx.lineTo(24, 18);
+                ctx.lineTo(12, 22);
+                ctx.lineTo(-12, 22);
+                ctx.lineTo(-24, 18);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.fillStyle = '#ec4899';
+                ctx.beginPath();
+                ctx.moveTo(-10, -2);
+                ctx.lineTo(10, -2);
+                ctx.lineTo(0, 8);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = 'rgba(236, 72, 153, 0.4)';
+                ctx.beginPath();
+                ctx.moveTo(-6, 22);
+                ctx.lineTo(0, 35 + Math.random() * 8);
+                ctx.lineTo(6, 22);
+                ctx.closePath();
+                ctx.fill();
+
+            } else if (gameState.selectedRobot === 'titan') {
+                ctx.fillStyle = '#2d1a04';
+                ctx.strokeStyle = robotStat.color;
+                ctx.lineWidth = 3.5;
+                ctx.beginPath();
+                ctx.moveTo(-18, -22);
+                ctx.lineTo(18, -22);
+                ctx.lineTo(25, -5);
+                ctx.lineTo(25, 18);
+                ctx.lineTo(15, 26);
+                ctx.lineTo(-15, 26);
+                ctx.lineTo(-25, 18);
+                ctx.lineTo(-25, -5);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.fillStyle = '#f59e0b';
+                ctx.fillRect(-16, -12, 10, 6);
+                ctx.fillRect(6, -12, 10, 6);
+
+                ctx.strokeStyle = '#78350f';
+                ctx.beginPath();
+                ctx.moveTo(-20, 5);
+                ctx.lineTo(20, 5);
+                ctx.stroke();
+            }
+
+            if (p.slowTimer > 0) {
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = '#f59e0b';
+                ctx.strokeStyle = '#f59e0b';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([4, 4]);
+                ctx.beginPath();
+                ctx.arc(0, 0, 26, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+
+            ctx.restore();
+
+            if (gameState.zoneBannerTimer > 0) {
+                ctx.save();
+                ctx.fillStyle = 'rgba(11, 15, 25, 0.85)';
+                ctx.strokeStyle = currentTheme.textColor.includes('cyan') ? '#06b6d4' : currentTheme.textColor.includes('pink') ? '#ec4899' : '#10b981';
+                ctx.lineWidth = 2;
+                
+                ctx.fillRect(0, height / 2 - 35, width, 60);
+                ctx.beginPath();
+                ctx.moveTo(0, height / 2 - 35);
+                ctx.lineTo(width, height / 2 - 35);
+                ctx.moveTo(0, height / 2 + 25);
+                ctx.lineTo(width, height / 2 + 25);
+                ctx.stroke();
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = "bold 13px 'Space Grotesk', sans-serif";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText("--- FIREWALL AGGIORNATO ---", width / 2, height / 2 - 15);
+
+                ctx.fillStyle = ctx.strokeStyle; 
+                ctx.font = "extrabold 18px 'Space Grotesk', sans-serif";
+                ctx.fillText(gameState.zoneBannerText, width / 2, height / 2 + 8);
+                ctx.restore();
+            }
+        }
+
+        function gameLoop(currentTime) {
+            if (!gameState.lastTime) gameState.lastTime = currentTime;
+            const deltaTime = currentTime - gameState.lastTime;
+            gameState.lastTime = currentTime;
+
+            update(deltaTime);
+            draw();
+
+            if (gameState.active) {
+                requestAnimationFrame(gameLoop);
+            }
+        }
+
+        // Event Listeners dei menu
+        startBtn.addEventListener('click', () => {
+            initAudio(); 
+            startScreen.classList.add('hidden');
+            gameState.active = true;
+            resetGame();
+            requestAnimationFrame(gameLoop);
+        });
+
+        howToBtn.addEventListener('click', () => {
+            howToScreen.classList.remove('hidden');
+            howToScreen.classList.add('flex');
+        });
+
+        closeHowToBtn.addEventListener('click', () => {
+            howToScreen.classList.add('hidden');
+            howToScreen.classList.remove('flex');
+        });
+
+        restartBtn.addEventListener('click', () => {
+            initAudio();
+            gameOverScreen.classList.add('hidden');
+            gameState.active = true;
+            resetGame();
+            requestAnimationFrame(gameLoop);
+        });
+
+        backToMenuBtn.addEventListener('click', () => {
+            gameOverScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+            resetGame();
+            draw(); 
+        });
+
+        selectRobot('cruiser');
+
+        window.addEventListener('load', () => {
+            resizeCanvas();
+            draw();
+        });
+        
+        setTimeout(() => {
+            resizeCanvas();
+            draw();
+        }, 120);
+    </script>
+</body>
+</html>
